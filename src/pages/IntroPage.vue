@@ -60,24 +60,25 @@ onBeforeMount(async () => {
 
 <template>
   <div class="intro-page-container" style="position: relative;">
-    <div class="temple" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <div class="temple">
       <div class="roof-container" :class="{ active: roof.active }">
         <div
           style="
             width: 100%;
             height: 60%;
             clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
-            background: black;
+            background: #1c1c1c;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: var(--p-zinc-200);
           "
           class="roof"
-        >
-        </div>
-        <div style="width: 100%; height: 40%; border: 1px solid black;">
-          <div style="height: 50%; background: black;"></div>
-          <div style="height: 50%; background: black;"></div>
-        </div>
+        >τέκα</div>
+        <div style="width: 100%; height: 40%; background: #1c1c1c;"></div>
       </div>
-      <div class="roof__title" :class="{ active: title.active }">τέκα</div>
+      <!-- <div class="roof__title" :class="{ active: title.active }">τέκα</div> -->
       <div class="columns-container" style="position: relative;">
         <div v-for="col in columns.number" :key="col" class="column" :class="{ active: columns.active[col - 1] }">
           <div class="column__top">
@@ -107,7 +108,6 @@ onBeforeMount(async () => {
           :class="{ active: steps.active[step - 1] }"
           :style="{paddingLeft: step * steps.padding + 'rem', paddingRight: step * steps.padding + 'rem'}"
         >
-          <!-- <div class="trapezoid"></div> -->
           <div class="step"></div>
         </div>
       </div>
@@ -119,6 +119,14 @@ onBeforeMount(async () => {
 .intro-page-container {
   width: 100%;
   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.temple {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -138,7 +146,7 @@ onBeforeMount(async () => {
 
 .roof__title {
   position: absolute;
-  top: 290px;
+  top: 200px;
   left: calc(50% - 57.5px);
   z-index: 3;
   font-size: 3.5rem;
@@ -171,22 +179,22 @@ onBeforeMount(async () => {
 
       .top__block {
         height: 50%;
-        background: black;
+        background: #1c1c1c;
       }
     
       .top__trapezoid {
         height: 50%;
         clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%);
-        background: black;
+        background: #1c1c1c;
       }
     }
 
     &__middle {
       width: 100%;
       height: 94%;
-      border: 1px solid black;
+      border: 1px solid #1c1c1c;
       clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
-      background: black
+      background: #1c1c1c
     }
   }
 }
@@ -206,7 +214,7 @@ onBeforeMount(async () => {
 .step {
   width: 100%;
   height: 1rem;
-  background: black;
+  background: #1c1c1c;
 }
 
 .step-container {

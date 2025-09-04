@@ -19,21 +19,20 @@ const allTags = ref([]);
 const selectedTags = ref([]);
 const containerRepRef = ref();
 
-const tilesViewTags = ref();
 
 // const selectedCategorySidePanelValue = ref();
 // const handleValueUpdate = (val) => {
 //   selectedCategorySidePanelValue.value = val;
 // };
 
-const repData = ref();
+let repData;
 const items = ref();
 
 async function searchByTags() {
   if(selectedTags.value?.length) {
-    items.value = await DB.searchItemsByTags(selectedTags.value);
+    items.value = await DB.searchItemsByTags(RepositoryStore.selectedRepository?.id, selectedTags.value);
   } else {
-    await getAllItems();
+    await getItemsAndAllTags();
   }
 }
 
@@ -65,36 +64,27 @@ const confirmDeleteItem = (event) => {
     accept: async () => {
       if(ItemStore.selectedItem.id) {
         await DB.deleteItem(ItemStore.selectedItem.id);
-        await updateData();
+        await getItemsAndAllTags();
         ItemStore.setSelectedItem(null);
       }
     },
   });
 };
 
-async function updateData() {
-  await getAllItems();
-  allTags.value = await DB.getAllUniqueTagsByRepId(RepositoryStore.selectedRepository?.id);
-}
-
-async function getAllItems() {
-  items.value = await DB.getItemsByRepId(RepositoryStore.selectedRepository?.id);
-  items.value.sort((a, b) => {
-    if(a.name < b.name) {
-      return -1;
-    }
-    if (a.name > b.name) {
-      return 1;
-    }
-    return 0;
-  });
+async function getItemsAndAllTags() {
+  const [tags, sortedItems] = await Promise.all([
+    DB.getAllUniqueTagsByRepId(RepositoryStore.selectedRepository?.id),
+    DB.getItemsByRepId(RepositoryStore.selectedRepository?.id)
+  ]);
+  allTags.value = tags;
+  items.value = sortedItems;
 }
 
 onBeforeMount(async () => {
-  await getAllItems();
-  repData.value = await DB.getRep(RepositoryStore.selectedRepository?.id);
-  allTags.value = await DB.getAllUniqueTagsByRepId(RepositoryStore.selectedRepository?.id);
-  containerRepRef.value.style.setProperty('--bg-color', "#" + repData.value.background);
+  repData = await DB.getRep(RepositoryStore.selectedRepository?.id);
+  containerRepRef.value.style.setProperty('--bg-color', "#" + repData.background);
+
+  await getItemsAndAllTags();
 });
 
 onUnmounted(() => {
@@ -133,7 +123,7 @@ onUnmounted(() => {
                 v-for="(item, index) in items"
                 :key="index"
                 class="list-view__item"
-                :class="ItemStore.selectedItem === item ? 'list-view__item_selected' : ''"
+                :class="ItemStore.selectedItem?.id === item.id ? 'list-view__item_selected' : ''"
                 @click="ItemStore.setSelectedItem(item)"
               >
                 <div class="item__container-image">
@@ -161,7 +151,7 @@ onUnmounted(() => {
               </div>
             </div>
             <div class="list-view__preview">
-              <PreviewItem />
+              <PreviewItem v-if="ItemStore.selectedItem?.id" :key="ItemStore.selectedItem?.id" />
             </div>
           </div>
           <div v-else class="tiles-view">
@@ -186,7 +176,7 @@ onUnmounted(() => {
                 </div>
               </div>
               <div class="item__tags-block">
-                <div ref="tilesViewTags" class="tags" :style="tilesViewTags?.[index]?.offsetHeight > 28 ? {height: '26px', overflow: 'hidden'} : {}">
+                <div class="tags" style="height: 26px; overflow: hidden;">
                   <Tag
                     v-for="(tag, ind) in item.tags"
                     :key="ind"
@@ -195,11 +185,11 @@ onUnmounted(() => {
                   ></Tag>
                 </div>
                 <Button
-                  v-if="tilesViewTags?.[index]?.offsetHeight > 28"
-                  label="more"
+                  v-if="item.tags.join('').length > 13"
+                  label="..."
                   variant="outlined"
                   severity="secondary"
-                  @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true"
+                  @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true;"
                   autofocus
                   class="tags__button"
                 />
@@ -214,7 +204,7 @@ onUnmounted(() => {
         </template>
       </div>
     </div>
-    <ItemFormDialog @update-data="updateData()" />
+    <ItemFormDialog @update-data="getItemsAndAllTags()" />
     <Dialog
       v-model:visible="ItemStore.isVisibleItemViewDialog"
       modal
@@ -318,7 +308,8 @@ onUnmounted(() => {
 
     .responsive-image {
       max-width: 100%;
-      height: auto;
+      max-height: 100%;
+      object-fit: contain;
     }
   }
 

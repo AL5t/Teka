@@ -67,7 +67,17 @@ const DB = {
   async getItemsByRepId(repId) {
     await this.init();
     const index = db.transaction(ITEMS_NAME).objectStore(ITEMS_NAME).index('by-repId');
-    return index.getAll(IDBKeyRange.only(repId));
+    const items = await index.getAll(IDBKeyRange.only(repId));
+    const sortedItems = items.sort((a, b) => {
+      if(a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    });
+    return sortedItems;
   },
 
   async getItem(itemId) {
@@ -110,11 +120,15 @@ const DB = {
     await db.put(ITEMS_NAME, item);
   },
 
-  async searchItemsByTags(tags) {
+  async searchItemsByTags(repId, tags) {
     await this.init();
 
     if (!db) {
       throw new Error('DB is not initialized');
+    }
+
+    if (!repId) {
+      throw new Error('Rep is not selected');
     }
 
     const tx = db.transaction(ITEMS_NAME, 'readonly');
@@ -125,11 +139,12 @@ const DB = {
     for (const tag of tags) {
       const matchedItems = await index.getAll(tag);
       for (const item of matchedItems) {
-        results.set(item.id, item);
+        if (item.repId === repId) {
+          results.set(item.id, item);
+        }
       }
     }
 
-    /// const found = await DB.searchItemsByTags(['urgent', 'work']);
     return Array.from(results.values());
   },
 

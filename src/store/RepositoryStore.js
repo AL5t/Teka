@@ -20,7 +20,6 @@ export const useRepositoryStore = defineStore('RepositoryStore', {
 
     async getAllReps() {
       this.allReps = await DB.getAllReps();
-      console.log("this.allReps", this.allReps);
       this.allReps.push({ isTemplate: true });
     },
   },
