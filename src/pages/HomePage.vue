@@ -39,7 +39,8 @@ async function addDemoData() {
       id: repId,
       name: demoData[i].name,
       description: demoData[i].description,
-      background: demoData[i].background
+      background: demoData[i].background,
+      backgroundImage: demoData[i].backgroundImage,
     }).then(async () => {
       for (let j = 0; j < demoData[i].items.length; j++) {
         let image = null;
@@ -70,7 +71,6 @@ onBeforeMount(async () => {
     await addDemoData();
     await RepositoryStore.getAllReps();
   }
-  console.log("allReps", RepositoryStore.allReps);
 
   for (let i = 0; i < columns.value.number; i++) {
     setTimeout(() => {
@@ -107,7 +107,7 @@ onBeforeMount(async () => {
             style="width: 100%; border-bottom: 3px solid #333; display: flex; gap: 0.25rem; align-items: end; justify-content: start;"
             :style="{ height: col + 3 + 'rem'}"
           >
-            <div v-for="book in 3" :key="book" style="width: 1rem; background: #c3c3c3;" :style="{ height: col + 2 + 'rem' }"></div>
+            <div v-for="book in 3" :key="book" style="width: 1rem; background: #d8ccb0;" :style="{ height: col + 2 + 'rem' }"></div>
           </div>
         </div>
       </div>
@@ -153,7 +153,7 @@ onBeforeMount(async () => {
             style="width: 100%; border-bottom: 3px solid #333; display: flex; gap: 0.25rem; align-items: end; justify-content: start;"
             :style="{ height: col + 3 + 'rem'}"
           >
-            <div v-for="book in 3" :key="book" style="width: 1rem; background: #c3c3c3;" :style="{ height: col + 2 + 'rem' }"></div>
+            <div v-for="book in 3" :key="book" style="width: 1rem; background: #d8ccb0;" :style="{ height: col + 2 + 'rem' }"></div>
           </div>
         </div>
       </div>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+  <defs>
+    <pattern id="books" patternUnits="userSpaceOnUse" width="200" height="200">
+
+      <rect width="200" height="200" fill="none"/>
+
+      <!-- Открытая книга -->
+      <g stroke="#555" stroke-width="1" fill="none" transform="translate(40,40) rotate(-12) scale(1)">
+        <path d="M2 6h8v10H2zM10 6h8v10h-8z"/><path d="M10 6v10"/>
+      </g>
+
+      <!-- Закрытая книга -->
+      <g stroke="#555" stroke-width="1" fill="none" transform="translate(130,50) rotate(8) scale(1)">
+        <rect x="3" y="4" width="10" height="14" rx="1"/><path d="M3 6h10"/>
+      </g>
+
+      <!-- Стопка книг -->
+      <g stroke="#555" stroke-width="1" fill="none" transform="translate(60,140) rotate(-6) scale(1)">
+        <rect x="2" y="14" width="14" height="3"/>
+        <rect x="3" y="10" width="14" height="3"/>
+        <rect x="4" y="6" width="14" height="3"/>
+      </g>
+
+      <!-- Полка с книгами -->
+      <g stroke="#555" stroke-width="1" fill="none" transform="translate(130,130) rotate(15) scale(1)">
+        <rect x="2" y="14" width="16" height="2"/>
+        <rect x="3" y="8" width="2" height="6"/>
+        <rect x="7" y="6" width="2" height="8"/>
+        <rect x="11" y="9" width="2" height="5"/>
+        <rect x="15" y="7" width="2" height="7"/>
+      </g>
+
+      <!-- Перо -->
+      <g stroke="#555" stroke-width="1" fill="none" transform="translate(40,120) rotate(-20) scale(1)">
+        <path d="M4 16c6-8 8-12 14-14-2 6-6 10-14 14Z"/>
+        <path d="M4 16c2-2 5-3 8-3"/>
+      </g>
+
+      <!-- Свиток -->
+      <g stroke="#555" stroke-width="1" fill="none" transform="translate(100,30) rotate(5) scale(1)">
+        <path d="M4 6h10v10H4z"/>
+        <path d="M4 6a2 2 0 0 1 0-4h10a2 2 0 0 1 0 4"/><path d="M4 16a2 2 0 0 0 0 4h10a2 2 0 0 0 0-4"/>
+      </g>
+
+      <!-- Закладка -->
+      <g stroke="#555" stroke-width="1" fill="none" transform="translate(160,100) rotate(-10) scale(1)">
+        <rect x="4" y="4" width="8" height="14"/>
+        <path d="M4 18l4-3 4 3"/>
+      </g>
+
+      <!-- Маленькие звёздочки для заполнения -->
+      <g stroke="#555" stroke-width="1.2" fill="none" transform="translate(80,80) rotate(0) scale(0.6)">
+        <path d="M2 6l2-2 2 2 2-2 2 2"/>
+      </g>
+      <g stroke="#555" stroke-width="1.2" fill="none" transform="translate(160,160) rotate(15) scale(0.7)">
+        <path d="M2 6l2-2 2 2 2-2 2 2"/>
+      </g>
+    </pattern>
+  </defs>
+
+  <rect width="200" height="200" fill="url(#books)"/>
+  
+</svg>

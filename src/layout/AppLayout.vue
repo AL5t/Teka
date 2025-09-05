@@ -32,6 +32,7 @@ function goToHomePage() {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: var(--bg-color);
 
   &__title {
     font-size: 3rem;

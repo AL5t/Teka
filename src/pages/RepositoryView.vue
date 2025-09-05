@@ -1,11 +1,12 @@
 <script setup>
-import { onBeforeMount, onUnmounted, ref } from 'vue';
+import { onBeforeMount, onUnmounted, ref, provide, computed } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
 import { useRepositoryStore } from '@/store/RepositoryStore';
 import { useItemStore } from '@/store/ItemStore';
 
 import DB from '@/composables/db';
 import showUrl from '@/composables/showUrl';
+import changeColorShade from '@/composables/changeColorShade';
 
 import PreviewItem from '@/components/PreviewItem.vue';
 // import SidePanel from '@/components/SidePanel.vue';
@@ -19,14 +20,32 @@ const allTags = ref([]);
 const selectedTags = ref([]);
 const containerRepRef = ref();
 
+let repData;
+const items = ref();
+const backgroundUrl = ref();
+const backgroundStyle = computed(() => {
+  return {
+    backgroundImage: backgroundUrl.value,
+  };
+});
+
+const handlers = {};
+function registerHandler(childName, methods) {
+  handlers[childName] = methods;
+}
+function callHandler(childName, methodName, ...args) {
+  if (handlers[childName]?.[methodName]) {
+    handlers[childName][methodName](...args);
+  }
+}
+provide('registerHandler', registerHandler);
+provide('callHandler', callHandler);
 
 // const selectedCategorySidePanelValue = ref();
 // const handleValueUpdate = (val) => {
 //   selectedCategorySidePanelValue.value = val;
 // };
 
-let repData;
-const items = ref();
 
 async function searchByTags() {
   if(selectedTags.value?.length) {
@@ -47,10 +66,10 @@ function openItemFormDialog(target, item) {
   }
 }
 
-const confirmDeleteItem = (event) => {
+const confirmDeleteItem = () => {
   confirm.require({
-    target: event.currentTarget,
     message: 'Do you want to delete this item?',
+    header: 'Delete item',
     icon: 'pi pi-info-circle',
     rejectProps: {
         label: 'Cancel',
@@ -82,18 +101,23 @@ async function getItemsAndAllTags() {
 
 onBeforeMount(async () => {
   repData = await DB.getRep(RepositoryStore.selectedRepository?.id);
-  containerRepRef.value.style.setProperty('--bg-color', "#" + repData.background);
+  // containerRepRef.value.style.setProperty('--bg-color', "#" + repData.background);
+  document.body.style.setProperty('--bg-color', "#" + (repData.background || 'fff'));
+  document.body.style.setProperty('--bg-card-color', changeColorShade(repData.background, 25));
+
+  backgroundUrl.value = `url("${repData.backgroundImage}")`;
 
   await getItemsAndAllTags();
 });
 
 onUnmounted(() => {
   ItemStore.$reset();
+  document.body.style.setProperty('--bg-color', "#fff");
 });
 </script>
 
 <template>
-  <div class="container-rep" ref="containerRepRef">
+  <div class="container-rep" ref="containerRepRef" :style="backgroundStyle">
     <!-- <SidePanel @update-selected-category="handleValueUpdate" /> -->
     <div class="main-panel">
       <div class="main-panel__title">{{ repData?.name }}</div>
@@ -124,7 +148,7 @@ onUnmounted(() => {
                 :key="index"
                 class="list-view__item"
                 :class="ItemStore.selectedItem?.id === item.id ? 'list-view__item_selected' : ''"
-                @click="ItemStore.setSelectedItem(item)"
+                @click="ItemStore.selectedItem?.id === item.id ? ItemStore.setSelectedItem(null) : ItemStore.setSelectedItem(item)"
               >
                 <div class="item__container-image">
                   <img :src=showUrl(item?.image) class="responsive-image" />
@@ -133,9 +157,8 @@ onUnmounted(() => {
                   <div class="item__top-block">
                     <span class="item__name" v-tooltip="item.name">{{ item.name }}</span>
                     <div>
-                      <Button icon="pi pi-pencil" severity="secondary" variant="text" @click="openItemFormDialog('edit', item)"></Button>
-                      <Button icon="pi pi-trash" severity="secondary" variant="text" @click="confirmDeleteItem($event)"></Button>
-                      <ConfirmPopup></ConfirmPopup>
+                      <Button icon="pi pi-pencil" severity="secondary" variant="text" @click.stop="openItemFormDialog('edit', item)"></Button>
+                      <Button icon="pi pi-trash" severity="secondary" variant="text" @click.stop="confirmDeleteItem()"></Button>
                     </div>
                   </div>
                   <div class="tags item__tags">
@@ -163,36 +186,37 @@ onUnmounted(() => {
               <div class="item__container-image tiles" @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true">
                 <img :src=showUrl(item?.image) class="responsive-image" />
               </div>
-              <div class="item__name-block">
-                <span
-                  v-tooltip="item.name"
-                  @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true"
-                  class="item__name"
-                >{{ item.name }}</span>
-                <div class="item__buttons">
-                  <Button class="item__button" icon="pi pi-pencil" severity="secondary" variant="text" @click.stop="openItemFormDialog('edit', item)"></Button>
-                  <Button class="item__button" icon="pi pi-trash" severity="secondary" variant="text" @click="confirmDeleteItem($event)"></Button>
-                  <ConfirmPopup></ConfirmPopup>
+              <div style="width: 100%; padding: 0.5rem; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-card-color); border-radius: 6px;">
+                <div class="item__name-block">
+                  <span
+                    v-tooltip="item.name"
+                    @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true"
+                    class="item__name"
+                  >{{ item.name }}</span>
+                  <div class="item__buttons">
+                    <Button class="item__button" icon="pi pi-pencil" severity="secondary" variant="text" @click.stop="openItemFormDialog('edit', item)"></Button>
+                    <Button class="item__button" icon="pi pi-trash" severity="secondary" variant="text" @click.stop="confirmDeleteItem()"></Button>
+                  </div>
                 </div>
-              </div>
-              <div class="item__tags-block">
-                <div class="tags" style="height: 26px; overflow: hidden;">
-                  <Tag
-                    v-for="(tag, ind) in item.tags"
-                    :key="ind"
-                    :value="tag"
-                    class="tag"
-                  ></Tag>
+                <div class="item__tags-block">
+                  <div class="tags" style="height: 26px; overflow: hidden;">
+                    <Tag
+                      v-for="(tag, ind) in item.tags"
+                      :key="ind"
+                      :value="tag"
+                      class="tag"
+                    ></Tag>
+                  </div>
+                  <Button
+                    v-if="item.tags.join('').length > 13"
+                    label="..."
+                    variant="outlined"
+                    severity="secondary"
+                    @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true;"
+                    autofocus
+                    class="tags__button"
+                  />
                 </div>
-                <Button
-                  v-if="item.tags.join('').length > 13"
-                  label="..."
-                  variant="outlined"
-                  severity="secondary"
-                  @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true;"
-                  autofocus
-                  class="tags__button"
-                />
               </div>
             </div>
           </div>
@@ -204,6 +228,7 @@ onUnmounted(() => {
         </template>
       </div>
     </div>
+    <ConfirmDialog></ConfirmDialog>
     <ItemFormDialog @update-data="getItemsAndAllTags()" />
     <Dialog
       v-model:visible="ItemStore.isVisibleItemViewDialog"
@@ -211,6 +236,9 @@ onUnmounted(() => {
       :draggable="false"
       :style="{ width: '50rem', height: '85%' }"
       :pt="{
+        root: {
+          style: {'background-color': 'var(--bg-color)'}
+        },
         content: {
           style: {'flex-grow': 1},
         }
@@ -229,6 +257,9 @@ onUnmounted(() => {
   width: 100%;
   display: flex;
   background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-repeat: repeat;
+  background-size: 200px 200px;
 }
 
 .main-panel {
@@ -320,6 +351,8 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    background-color: var(--bg-card-color);
+    border-radius: 6px;
 
     .item__top-block {
       display: flex;
@@ -351,17 +384,18 @@ onUnmounted(() => {
 }
 
 .tiles {
-  width: 200px;
+  width: 100%;
   height: 200px;
 }
 
 .tiles-view {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, 200px);
-  grid-template-rows: repeat(auto-fit, 268px);
+  grid-template-columns: repeat(auto-fit, 250px);
+  grid-template-rows: repeat(auto-fit, 300px);
   gap: 1rem 1rem;
   justify-content: space-between;
+  overflow: auto;
 
   &__item {
     display: flex;

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { useRepositoryStore } from '@/store/RepositoryStore';
 import DB from '@/composables/db';
@@ -10,6 +10,24 @@ const selectedRep = ref({
   name: null,
   description: null,
   background: null,
+  backgroundImage: 'none',
+});
+
+const background = ref({
+  list: [
+    {name: "movies", url: "/svg/movies.svg"}, 
+    {name: "books", url: "/svg/books.svg"},
+    {name: "music", url: "/svg/music.svg"},
+    {name: "nature", url: "/svg/nature.svg"},
+    {name: "party", url: "/svg/party.svg"}
+  ],
+});
+const backgroundStyle = computed(() => {
+  return {
+    backgroundColor: "#" + selectedRep.value.background,
+    backgroundImage: `url(${selectedRep.value.backgroundImage})`,
+    backgroundRepeat: "repeat"
+  };
 });
 
 
@@ -22,11 +40,16 @@ async function createRep() {
     selectedRep.value.background = "e4e4e7";
   }
 
+  if(!selectedRep.value.backgroundImage) {
+    selectedRep.value.backgroundImage = "none";
+  }
+
   await DB.addRep({
     id: uuidv4(),
     name: selectedRep.value.name,
     description: selectedRep.value.description,
-    background: selectedRep.value.background
+    background: selectedRep.value.background,
+    backgroundImage: selectedRep.value.backgroundImage
   });
 
   RepositoryStore.isVisibleRepFormDialog = false;
@@ -47,7 +70,8 @@ async function editRep() {
     id: RepositoryStore.selectedRepository.id,
     name: selectedRep.value.name,
     description: selectedRep.value.description,
-    background: selectedRep.value.background
+    background: selectedRep.value.background,
+    backgroundImage: selectedRep.value.backgroundImage
   });
 
   await RepositoryStore.getAllReps();
@@ -66,13 +90,21 @@ function openRepFormDialog() {
     selectedRep.value.name = RepositoryStore.selectedRepository.name;
     selectedRep.value.description = RepositoryStore.selectedRepository.description;
     selectedRep.value.background = RepositoryStore.selectedRepository.background;
+    selectedRep.value.backgroundImage = RepositoryStore.selectedRepository.backgroundImage;
   }
 }
 
 </script>
 
 <template>
-  <Dialog v-model:visible="RepositoryStore.isVisibleRepFormDialog" @show="openRepFormDialog" @after-hide="closeRepFormDialog" modal :draggable="false" :style="{ width: '50rem' }">
+  <Dialog
+    v-model:visible="RepositoryStore.isVisibleRepFormDialog"
+    @show="openRepFormDialog"
+    @after-hide="closeRepFormDialog"
+    modal
+    :draggable="false"
+    :style="backgroundStyle"
+  >
     <template #header>
       <div>
         <span v-if="RepositoryStore.isCreatingRep">Create</span>
@@ -87,17 +119,28 @@ function openRepFormDialog() {
       <div>
         <Textarea v-model="selectedRep.description" class="dialog-content__textarea" rows="5" autocomplete="off" placeholder="Description" />
       </div>
-      <div class="dialog-content__color-picker">
-        <span>Background</span>
-        <ColorPicker
-          v-model="selectedRep.background"
-          defaultColor="e4e4e7"
-          :pt="{
-            preview: {
-              style: {width: '35px', height: '35px'}
-            }
-          }"
-        />
+      <div class="dialog-content__background-block">
+        <div>Background</div>
+        <div class="background__container">
+          <ColorPicker
+            v-model="selectedRep.background"
+            defaultColor="e4e4e7"
+            :pt="{
+              preview: {
+                style: {width: '75px', height: '75px', border: '1px solid black'}
+              }
+            }"
+          />
+          <div
+            v-for="(val, index) in background.list"
+            :key="index"
+            @click="selectedRep.backgroundImage === val.url ? selectedRep.backgroundImage = 'none' : selectedRep.backgroundImage = val.url"
+            :style="{backgroundImage: `url(${val.url})`}"
+            class="background__image-container"
+          >
+            <i v-if="selectedRep.backgroundImage === val.url" class="pi pi-star-fill" style="color: #00ff00"></i>
+          </div>
+        </div>
       </div>
     </div>
     <template #footer>
@@ -115,7 +158,7 @@ function openRepFormDialog() {
 
 <style scoped lang="scss">
 .dialog-content {
-  width: 50%;
+  width: 530px;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -130,10 +173,31 @@ function openRepFormDialog() {
     resize: none;
   }
 
-  &__color-picker {
+  &__background-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.background {
+  &__container {
     display: flex;
     gap: 1rem;
     align-items: center;
+    flex-wrap: wrap;
+  }
+
+  &__image-container {
+    width: 75px;
+    height: 75px;
+    display: flex;
+    align-items: end;
+    border: 1px solid #000;
+    border-radius: 6px;
+    background-color: #fff;
+    background-position: 25% 75%;
+    overflow: hidden;
   }
 }
 </style>

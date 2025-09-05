@@ -3,6 +3,7 @@ const demoData = [
     name: "KinoTeka",
     description: "Сollection of different movies that are worth watching",
     background: "edc961",
+    backgroundImage: "/svg/movies.svg",
     items: [
       {
         name: "Black Swan",
@@ -76,6 +77,7 @@ const demoData = [
     name: "BiblioTeka",
     description: "Сollection of different books that are worth reading",
     background: "f0a154",
+    backgroundImage: "/svg/books.svg",
     items: [
       {
         name: "To Kill a Mockingbird",

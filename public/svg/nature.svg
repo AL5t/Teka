@@ -1,0 +1,55 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250'>
+  <defs>
+    <pattern id='nature' patternUnits='userSpaceOnUse' width='250' height='250'>
+      <rect width='250' height='250' fill='none'/>
+
+      <!-- Рыбка -->
+      <g stroke='#555' stroke-width='1.6' fill='none' transform='translate(50,50) rotate(-12) scale(1.2)'>
+      <path d='M2 12c6-8 12-8 18 0-6 8-12 8-18 0Z'/>
+      <circle cx='6' cy='12' r='1'/>
+      </g>
+
+      <!-- Гора -->
+      <g stroke='#555' stroke-width='1.6' fill='none' transform='translate(160,60) rotate(10) scale(1.1)'>
+      <path d='M2 18l8-14 8 14H2Z'/>
+      <path d='M10 4l2 4-2 2-2-2Z'/>
+      </g>
+
+      <!-- Животное (кот) -->
+      <g stroke='#555' stroke-width='1.6' fill='none' transform='translate(60,180) rotate(-6) scale(1.1)'>
+      <circle cx='12' cy='12' r='6'/>
+      <path d='M6 10l-2-3M18 10l2-3'/>
+      <path d='M9 14h6'/>
+      </g>
+
+      <!-- Растение -->
+      <g stroke='#555' stroke-width='1.6' fill='none' transform='translate(180,170) rotate(12) scale(1.1)'>
+      <path d='M12 20V8'/>
+      <path d='M12 12c-4-2-6-6-4-8 2 0 4 2 4 4 0-2 2-4 4-4 2 2 0 6-4 8Z'/>
+      </g>
+
+      <!-- Цветок -->
+      <g stroke='#555' stroke-width='1.6' fill='none' transform='translate(120,120) rotate(-20) scale(1.2)'>
+      <circle cx='12' cy='12' r='2'/>
+      <circle cx='12' cy='6' r='3'/>
+      <circle cx='12' cy='18' r='3'/>
+      <circle cx='6' cy='12' r='3'/>
+      <circle cx='18' cy='12' r='3'/>
+      </g>
+
+      <!-- Жук -->
+      <g stroke='#555' stroke-width='1.6' fill='none' transform='translate(200,100) rotate(5) scale(1.1)'>
+      <ellipse cx='12' cy='12' rx='6' ry='8'/>
+      <path d='M12 4v16M6 10H2M18 10h4M6 14H2M18 14h4'/>
+      </g>
+
+      <!-- Солнце -->
+      <g stroke='#555' stroke-width='1.6' fill='none' transform='translate(80,100) rotate(0) scale(1.2)'>
+      <circle cx='12' cy='12' r='4'/>
+      <path d='M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M19 5l-3 3M5 19l3-3M19 19l-3-3'/>
+      </g>
+
+    </pattern>
+  </defs>
+  <rect width='250' height='250' fill='url(#nature)'/>
+</svg>

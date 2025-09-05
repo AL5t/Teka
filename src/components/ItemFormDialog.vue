@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import FileUpload from 'primevue/fileupload';
 import { useRepositoryStore } from '@/store/RepositoryStore';
@@ -24,6 +24,11 @@ const newTag = ref();
 const allTags = ref([]);
 const srcUploadingFile = ref();
 const isSelectImage = ref(false);
+
+const callHandler = inject('callHandler');
+function updateItemData() {
+  callHandler('PreviewItem', 'updateItemData');
+}
 
 function addNewTag() {
   if(newTag.value) {
@@ -71,6 +76,8 @@ async function editItem() {
   });
 
   emit("updateData");
+
+  updateItemData();
 
   closeItemFormDialog();
 }

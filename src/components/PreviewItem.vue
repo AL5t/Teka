@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount, inject } from 'vue';
 import DB from '@/composables/db';
 import showUrl from '@/composables/showUrl';
 import { useItemStore } from '@/store/ItemStore';
@@ -7,9 +7,19 @@ import { useItemStore } from '@/store/ItemStore';
 const ItemStore = useItemStore();
 
 const itemData = ref();
+const registerHandler = inject('registerHandler');
+
+async function getItemData() {
+  itemData.value = await DB.getItem(ItemStore.selectedItem?.id);
+}
+
+async function updateItemData() {
+  await getItemData();
+} 
 
 onBeforeMount(async () => {
-  itemData.value = await DB.getItem(ItemStore.selectedItem?.id);
+  await getItemData();
+  registerHandler('PreviewItem', { updateItemData });
 })
 </script>
 
@@ -18,16 +28,18 @@ onBeforeMount(async () => {
     <div class="preview-container__image-container">
       <img v-if="itemData?.image" :src="showUrl(itemData?.image)" class="responsive-image" />
     </div>
-    <div class="preview-container__title">{{ itemData?.name }}</div>
-    <div v-if="itemData?.tags" class="tags preview-container__tags">
-      <Tag
-        v-for="(tag, ind) in itemData?.tags"
-        :key="ind"
-        :value="tag"
-        class="tag"
-      ></Tag>
+    <div style="width: 100%; max-height: 50%; padding: 1rem 1rem; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-card-color); border-radius: 6px;">
+      <div class="preview-container__title">{{ itemData?.name }}</div>
+      <div v-if="itemData?.tags" class="tags preview-container__tags">
+        <Tag
+          v-for="(tag, ind) in itemData?.tags"
+          :key="ind"
+          :value="tag"
+          class="tag"
+        ></Tag>
+      </div>
+      <div class="preview-container__note">{{ itemData?.note }}</div>
     </div>
-    <div class="preview-container__note">{{ itemData?.note }}</div>
   </div>
 </template>
 

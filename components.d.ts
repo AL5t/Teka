@@ -14,6 +14,7 @@ declare module 'vue' {
     CardView: typeof import('./src/components/CardView.vue')['default']
     Carousel: typeof import('primevue/carousel')['default']
     ColorPicker: typeof import('primevue/colorpicker')['default']
+    ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     ConfirmPopup: typeof import('primevue/confirmpopup')['default']
     CreateRepDialog: typeof import('./src/components/RepFormDialog.vue')['default']
     Dialog: typeof import('primevue/dialog')['default']
