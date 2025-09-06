@@ -15,6 +15,17 @@ export const useItemStore = defineStore('ItemStore', {
     setSelectedItem(item) {
       this.selectedItem = item;
     },
+
+    openItemFormDialog(target, item) {
+      this.isVisibleItemFormDialog = true;
+
+      if(target === "edit") {
+        this.setSelectedItem(item);
+        this.isEditingItem = true;
+      } else {
+        this.isCreatingItem = true;
+      }
+    }
   },
   persist: true,
 });

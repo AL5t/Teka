@@ -55,17 +55,6 @@ async function searchByTags() {
   }
 }
 
-function openItemFormDialog(target, item) {
-  ItemStore.isVisibleItemFormDialog = true;
-
-  if(target === "edit") {
-    ItemStore.setSelectedItem(item);
-    ItemStore.isEditingItem = true;
-  } else {
-    ItemStore.isCreatingItem = true;
-  }
-}
-
 const confirmDeleteItem = () => {
   confirm.require({
     message: 'Do you want to delete this item?',
@@ -112,6 +101,7 @@ onBeforeMount(async () => {
 
 onUnmounted(() => {
   ItemStore.$reset();
+  RepositoryStore.setSelectedRepository(null);
   document.body.style.setProperty('--bg-color', "#fff");
 });
 </script>
@@ -120,7 +110,7 @@ onUnmounted(() => {
   <div class="container-rep" ref="containerRepRef" :style="backgroundStyle">
     <!-- <SidePanel @update-selected-category="handleValueUpdate" /> -->
     <div class="main-panel">
-      <div class="main-panel__title">{{ repData?.name }}</div>
+      <!-- <div class="main-panel__title">{{ repData?.name }}</div> -->
       <div class="main-panel__toolbar">
         <MultiSelect
           v-model="selectedTags"
@@ -133,11 +123,6 @@ onUnmounted(() => {
           :selectedItemsLabel="selectedTags?.length + ' tags'"
           class="toolbar__multiselect"
         />
-        <div>
-          <Button icon="pi pi-list" variant="text" :severity="RepositoryStore.isListView ? 'success' : 'secondary'" @click="RepositoryStore.isListView = true"></Button>
-          <Button icon="pi pi-th-large" variant="text" :severity="!RepositoryStore.isListView ? 'success' : 'secondary'" @click="RepositoryStore.isListView = false"></Button>
-          <Button icon="pi pi-plus" variant="text" severity="secondary" @click="openItemFormDialog('create')"></Button>
-        </div>
       </div>
       <div class="main-panel__content">
         <template v-if="items?.length">
@@ -157,7 +142,7 @@ onUnmounted(() => {
                   <div class="item__top-block">
                     <span class="item__name" v-tooltip="item.name">{{ item.name }}</span>
                     <div>
-                      <Button icon="pi pi-pencil" severity="secondary" variant="text" @click.stop="openItemFormDialog('edit', item)"></Button>
+                      <Button icon="pi pi-pencil" severity="secondary" variant="text" @click.stop="ItemStore.openItemFormDialog('edit', item)"></Button>
                       <Button icon="pi pi-trash" severity="secondary" variant="text" @click.stop="confirmDeleteItem()"></Button>
                     </div>
                   </div>
@@ -186,7 +171,7 @@ onUnmounted(() => {
               <div class="item__container-image tiles" @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true">
                 <img :src=showUrl(item?.image) class="responsive-image" />
               </div>
-              <div style="width: 100%; padding: 0.5rem; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-card-color); border-radius: 6px;">
+              <div style="width: 100%; padding: 0.5rem; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-card-color);">
                 <div class="item__name-block">
                   <span
                     v-tooltip="item.name"
@@ -194,7 +179,7 @@ onUnmounted(() => {
                     class="item__name"
                   >{{ item.name }}</span>
                   <div class="item__buttons">
-                    <Button class="item__button" icon="pi pi-pencil" severity="secondary" variant="text" @click.stop="openItemFormDialog('edit', item)"></Button>
+                    <Button class="item__button" icon="pi pi-pencil" severity="secondary" variant="text" @click.stop="ItemStore.openItemFormDialog('edit', item)"></Button>
                     <Button class="item__button" icon="pi pi-trash" severity="secondary" variant="text" @click.stop="confirmDeleteItem()"></Button>
                   </div>
                 </div>
@@ -223,7 +208,7 @@ onUnmounted(() => {
         </template>
         <template v-else>
           <div class="empty-content">
-            <div>No items</div>
+            <div class="empty-content__text">No items</div>
           </div>
         </template>
       </div>
@@ -234,7 +219,7 @@ onUnmounted(() => {
       v-model:visible="ItemStore.isVisibleItemViewDialog"
       modal
       :draggable="false"
-      :style="{ width: '50rem', height: '85%' }"
+      style="width: 50rem; height: 85%; border-radius: 0;"
       :pt="{
         root: {
           style: {'background-color': 'var(--bg-color)'}
@@ -293,6 +278,13 @@ onUnmounted(() => {
   height: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
+
+  &__text{
+    padding: 1rem;
+    font-size: 2rem;
+    background-color: var(--bg-card-color);
+  }
 }
 
 .list-view {
@@ -318,7 +310,6 @@ onUnmounted(() => {
     display: flex;
     cursor: pointer;
     border: solid transparent 2px;
-    border-radius: 6px;
 
     &_selected {
       border-color: #000;
@@ -352,7 +343,6 @@ onUnmounted(() => {
     flex-direction: column;
     gap: 1rem;
     background-color: var(--bg-card-color);
-    border-radius: 6px;
 
     .item__top-block {
       display: flex;

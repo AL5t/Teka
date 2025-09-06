@@ -82,6 +82,13 @@ function closeRepFormDialog() {
   RepositoryStore.isVisibleRepFormDialog = false;
   RepositoryStore.isCreatingRep = false;
   RepositoryStore.isEditingRep = false;
+
+  selectedRep.value = {
+    name: null,
+    description: null,
+    background: null,
+    backgroundImage: 'none',
+  };
 }
 
 
@@ -104,6 +111,7 @@ function openRepFormDialog() {
     modal
     :draggable="false"
     :style="backgroundStyle"
+    style="border-radius: 0"
   >
     <template #header>
       <div>
@@ -194,7 +202,6 @@ function openRepFormDialog() {
     display: flex;
     align-items: end;
     border: 1px solid #000;
-    border-radius: 6px;
     background-color: #fff;
     background-position: 25% 75%;
     overflow: hidden;

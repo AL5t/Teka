@@ -76,7 +76,7 @@ const demoData = [
   {
     name: "BiblioTeka",
     description: "Сollection of different books that are worth reading",
-    background: "f0a154",
+    background: "f7ba7c",
     backgroundImage: "/svg/books.svg",
     items: [
       {

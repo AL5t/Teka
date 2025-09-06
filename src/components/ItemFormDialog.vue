@@ -117,7 +117,7 @@ function closeItemFormDialog() {
     @after-hide="closeItemFormDialog()"
     modal
     :draggable="false"
-    :style="{ width: '75%' }"
+    style="width: 75%; border-radius: 0;"
   >
     <template #header>
       <div v-if="ItemStore.isCreatingItem">Add item</div>

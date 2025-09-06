@@ -28,7 +28,7 @@ onBeforeMount(async () => {
     <div class="preview-container__image-container">
       <img v-if="itemData?.image" :src="showUrl(itemData?.image)" class="responsive-image" />
     </div>
-    <div style="width: 100%; max-height: 50%; padding: 1rem 1rem; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-card-color); border-radius: 6px;">
+    <div class="preview-container__text-content">
       <div class="preview-container__title">{{ itemData?.name }}</div>
       <div v-if="itemData?.tags" class="tags preview-container__tags">
         <Tag
@@ -66,10 +66,20 @@ onBeforeMount(async () => {
     }
   }
 
+  &__text-content {
+    width: 100%;
+    max-height: 50%;
+    padding: 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: var(--bg-card-color);
+  }
+
   &__title {
     max-height: 7rem;
     flex-shrink: 0;
-    font-size: 3rem;
+    font-size: 2.5rem;
     overflow: auto;
   }
 
