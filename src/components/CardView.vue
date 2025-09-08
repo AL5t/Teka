@@ -69,14 +69,11 @@ async function deleteRepository() {
   height: 300px;
   padding: 10px;
   margin: 0 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  @include flex(column, normal, stretch, 0.5rem);
   border: 2px solid var(--p-zinc-500);
 
   &__buttons {
-    display: flex;
-    justify-content: end
+    @include flex(row, end);
   }
 
   &__desc {
@@ -91,9 +88,7 @@ async function deleteRepository() {
 
   &_empty {
     height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include flex(row, center, center);
   }
 }
 </style>

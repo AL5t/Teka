@@ -8,15 +8,12 @@
 </template>
 
 <style scoped lang="scss">
-  .not-found {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-
-    &__title {
-      font-size: 2rem;
-      text-align: center;
-    }
+.not-found {
+  @include flex(column, normal, center, 1rem);
+  
+  &__title {
+    font-size: 2rem;
+    text-align: center;
   }
+}
 </style>

@@ -18,14 +18,14 @@ function goToHomePage() {
 </script>
 
 <template>
-  <header class="header">
+  <header class="header" :style="{borderColor: RepositoryStore.selectedRepository?.id ? '#333' : 'transparent'}">
     <div style="width: 120px;">
       <Button icon="pi pi-building-columns" variant="text" @click="goToIntroPage"></Button>
       <Button icon="pi pi-image" variant="text" @click="goToHomePage"></Button>
     </div>
-    <div class="header__title">
-      <span v-if="RepositoryStore.selectedRepository?.id" style="font-size: 2.5rem;">{{ RepositoryStore.selectedRepository?.name }}</span>
-      <span v-else>Teka</span>
+    <div>
+      <span v-if="RepositoryStore.selectedRepository?.id" class="header__title_rep">{{ RepositoryStore.selectedRepository?.name }}</span>
+      <span v-else class="header__title_home">Teka</span>
     </div>
     <div style="width: 120px;">
       <template v-if="RepositoryStore.selectedRepository?.id">
@@ -42,13 +42,16 @@ function goToHomePage() {
 .header {
   height: 60px;
   padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  @include flex(row, space-between, center);
   background-color: var(--bg-color);
+  border-bottom: 2px solid transparent;
 
-  &__title {
+  &__title_home {
     font-size: 3rem;
+  }
+  
+  &__title_rep {
+    font-size: 2.5rem;
   }
 }
 

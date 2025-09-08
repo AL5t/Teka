@@ -59,27 +59,13 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="intro-page-container" style="position: relative;">
+  <div class="intro-page-container">
     <div class="temple">
       <div class="roof-container" :class="{ active: roof.active }">
-        <div
-          style="
-            width: 100%;
-            height: 60%;
-            clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
-            background: #1c1c1c;
-            display: flex;
-            align-items: end;
-            justify-content: center;
-            font-size: 3.5rem;
-            color: var(--p-zinc-200);
-          "
-          class="roof"
-        >τέκα</div>
-        <div style="width: 100%; height: 40%; background: #1c1c1c;"></div>
+        <div class="roof">τέκα</div>
+        <div class="roof-base"></div>
       </div>
-      <!-- <div class="roof__title" :class="{ active: title.active }">τέκα</div> -->
-      <div class="columns-container" style="position: relative;">
+      <div class="columns-container">
         <div v-for="col in columns.number" :key="col" class="column" :class="{ active: columns.active[col - 1] }">
           <div class="column__top">
             <div class="top__block"></div>
@@ -87,8 +73,11 @@ onBeforeMount(async () => {
           </div>
           <div class="column__middle"></div>
         </div>
-        <Button icon="pi pi-sign-in" variant="text" style="position: absolute; top: 50%; left: calc(50% - 24px); font-size: 2rem;"
+        <Button
+          icon="pi pi-sign-in"
+          variant="text"
           @click="goHomePage"
+          class="button-enter"
           :pt="{
             icon: {
               style: {
@@ -118,60 +107,45 @@ onBeforeMount(async () => {
 <style scoped lang="scss">
 .intro-page-container {
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex(row, center, center);
 }
 
 .temple {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  @include flex(column, center, center);
 }
 
 .roof-container {
   width: 714px;
   height: 185px;
-  opacity: 0;
-  transform: translateY(-100px);
-  transition: transform 0.5s ease, opacity 0.5s ease;
-}
+  @include transition(translateY(-100px), translateY(0));
 
-.roof-container.active {
-  opacity: 1;
-  transform: translateY(0);
-}
+  .roof {
+    width: 100%;
+    height: 60%;
+    clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+    background: #1c1c1c;
+    @include flex(row, center, end);
+    font-size: 3.5rem;
+    color: var(--p-zinc-200);
+  }
 
-.roof__title {
-  position: absolute;
-  top: 200px;
-  left: calc(50% - 57.5px);
-  z-index: 3;
-  font-size: 3.5rem;
-  transform: translateY(-290px);
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  color: var(--p-zinc-200);
-  opacity: 0;
-}
-.roof__title.active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: transform 0.5s ease, opacity 0.5s ease;
+  .roof-base {
+    width: 100%;
+    height: 40%;
+    background: #1c1c1c;
+  }
 }
 
 .columns-container {
   width: 700px;
-  display: flex;
-  justify-content: space-between;
+  @include flex(row, space-between);
+  position: relative;
   
   .column {
     width: 63px;
     height: 260px;
-    opacity: 0;
-    transform: translateY(-100px);
-    transition: transform 0.5s ease, opacity 0.5s ease;
+    @include transition(translateY(-100px), translateY(0));
 
     &__top {
       width: 100%;
@@ -197,33 +171,33 @@ onBeforeMount(async () => {
       background: #1c1c1c
     }
   }
-}
 
-.column.active {
-  opacity: 1;
-  transform: translateY(0);
+  .button-enter {
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 24px);
+  }
 }
 
 .steps-container {
   width: 100%;
   padding: 0 3rem;
-  display: flex;
-  flex-direction: column-reverse;
-}
+  @include flex(column-reverse);
 
-.step {
-  width: 100%;
-  height: 1rem;
-  background: #1c1c1c;
-}
+  .step-container {
+    opacity: 0;
+    transition: opacity 0.5s ease;
 
-.step-container {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
+    &.active {
+      opacity: 1;
+    }
 
-.step-container.active {
-  opacity: 1;
+    .step {
+      width: 100%;
+      height: 1rem;
+      background: #1c1c1c;
+    }
+  }
 }
 
 .trapezoid {

@@ -8,7 +8,7 @@ const route = useRoute();
 </script>
 
 <template>
-  <IntroLayout v-if="route.name === 'IntroPage'" />
+  <IntroLayout v-if="route.path === '/'" />
   <AppLayout v-else />
 </template>
 

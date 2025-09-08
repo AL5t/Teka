@@ -210,17 +210,13 @@ function closeItemFormDialog() {
 
 <style scoped lang="scss">
 .dialog-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @include flex(column, normal, stretch, 1rem);
 }
 
 .image-container {
     width: 100%;
     height: 100px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include flex(row, space-between, center);
     flex-shrink: 0;
     overflow: hidden;
 

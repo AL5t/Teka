@@ -1,0 +1,19 @@
+@mixin flex($direction: row, $mainAxis: normal, $crossAxis: stretch, $gap: 0, $wrap: nowrap) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $mainAxis;
+  align-items: $crossAxis;
+  gap: $gap;
+  flex-wrap: $wrap;
+}
+
+@mixin transition($transformStart, $transformEnd) {
+  opacity: 0;
+  transform: $transformStart;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+
+  &.active {
+    opacity: 1;
+    transform: $transformEnd;
+  }
+}

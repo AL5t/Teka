@@ -259,8 +259,7 @@ onUnmounted(() => {
 
   &__toolbar {
     padding: 1rem 0;
-    display: flex;
-    justify-content: space-between;
+    @include flex(row, space-between);
 
     .toolbar__multiselect {
       width: 11rem;
@@ -276,9 +275,7 @@ onUnmounted(() => {
 .empty-content {
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include flex(row, center, center);
 
   &__text{
     padding: 1rem;
@@ -295,9 +292,7 @@ onUnmounted(() => {
   &__panel {
     width: 60%;
     padding-right: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    @include flex(column, normal, stretch, 1rem);
     overflow: auto;
   }
 
@@ -322,9 +317,7 @@ onUnmounted(() => {
   &__container-image {
     width: 20%;
     height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flex(row, center, center);
     flex-shrink: 0;
     overflow: hidden;
 
@@ -339,15 +332,11 @@ onUnmounted(() => {
     width: 80%;
     height: 200px;
     padding: 0 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    @include flex(column, normal, stretch, 1rem);
     background-color: var(--bg-card-color);
 
     .item__top-block {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
+      @include flex(row, space-between, stretch, 1rem);
 
       .item__name {
         max-width: calc(100% - 1rem - 80px);
@@ -388,17 +377,12 @@ onUnmounted(() => {
   overflow: auto;
 
   &__item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
+    @include flex(column, normal, flex-start, 0.5rem);
     cursor: pointer;
 
     .item__name-block {
       width: 100%;
-      display: flex;
-      gap: 0.5rem;
-      justify-content: space-between;
+      @include flex(row, space-between, stretch, 0.5rem);
 
       .item__name {
         max-width: calc(100% - 0.5rem - 56px);
@@ -410,8 +394,7 @@ onUnmounted(() => {
 
       .item__buttons {
         flex-shrink: 0;
-        display: flex;
-        align-items: center;
+        @include flex(row, normal, center);
 
         .item__button {
           padding: 0;
@@ -422,8 +405,7 @@ onUnmounted(() => {
     }
 
     .item__tags-block {
-      display: flex;
-      gap: 0.5rem;
+      @include flex(row, normal, stretch, 0.5rem);
     }
   }
 }

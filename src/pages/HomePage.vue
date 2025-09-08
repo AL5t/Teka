@@ -82,37 +82,27 @@ onBeforeMount(async () => {
 
 <template>
   <div class="main-page-container">
-    <div
-      style="
-        width: 20.5rem;
-        height: 95%;
-        clip-path: polygon(0% 0%, 100% 30%, 100% 70%, 0% 100%);
-        display: flex;
-        flex-direction: row-reverse;
-      "
-    >
+    <div class="books-side books-side_left">
       <div
         v-for="col in columns.number - 1"
         :key="col"
-        style="height: 100%; width: 2.5rem; display: flex; flex-direction: row-reverse;"
         :style="{ width: col + 3.5 + 'rem'}"
-        class="booksCol__left"
+        class="books-row books-row_left"
         :class="{ active: columns.active[col - 1] }"
       >
-        <div style="width: 45%; height: 100%; background: #333;"></div>
-        <div style="width: 55%; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+        <div class="books-column"></div>
+        <div class="books-shelves">
           <div
             v-for="shelf in col + 4"
             :key="shelf"
-            style="width: 100%; border-bottom: 3px solid #333; display: flex; gap: 0.25rem; align-items: end; justify-content: start;"
+            class="books-shelf"
             :style="{ height: col + 3 + 'rem'}"
           >
-            <div v-for="book in 3" :key="book" style="width: 1rem; background: #d8ccb0;" :style="{ height: col + 2 + 'rem' }"></div>
+            <div v-for="book in 3" :key="book" class="book" :style="{ height: col + 2 + 'rem' }"></div>
           </div>
         </div>
       </div>
-      <div style="width: 4rem; height: 100%; background: #333;" class="booksCol" :class="{ active: columns.active[3] }"></div>
-
+      <div class="books-row books-row_left row-column" :class="{ active: columns.active[3] }"></div>
     </div>
     <div class="carousel-container">
       <Carousel
@@ -129,63 +119,93 @@ onBeforeMount(async () => {
         </template>
       </Carousel>
     </div>
-    <div
-      style="
-        width: 20.5rem;
-        height: 95%;
-        clip-path: polygon(0% 30%, 100% 0%, 100% 100%, 0% 70%);
-        display: flex;
-      "
-    >
+    <div class="books-side books-side_right">
       <div
         v-for="col in columns.number - 1"
         :key="col"
-        style="height: 100%; width: 2.5rem; display: flex;"
         :style="{ width: col + 3.5 + 'rem'}"
-        class="booksCol"
+        class="books-row books-row_right"
         :class="{ active: columns.active[col - 1] }"
       >
-        <div style="width: 45%; height: 100%; background: #333;"></div>
-        <div style="width: 55%; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+        <div class="books-column"></div>
+        <div class="books-shelves">
           <div
             v-for="shelf in col + 4"
             :key="shelf"
-            style="width: 100%; border-bottom: 3px solid #333; display: flex; gap: 0.25rem; align-items: end; justify-content: start;"
+            class="books-shelf"
             :style="{ height: col + 3 + 'rem'}"
           >
-            <div v-for="book in 3" :key="book" style="width: 1rem; background: #d8ccb0;" :style="{ height: col + 2 + 'rem' }"></div>
+            <div v-for="book in 3" :key="book" class="book" :style="{ height: col + 2 + 'rem' }"></div>
           </div>
         </div>
       </div>
-      <div style="width: 4rem; height: 100%; background: #333;" class="booksCol" :class="{ active: columns.active[3] }"></div>
+      <div class="books-row books-row_right row-column" :class="{ active: columns.active[3] }"></div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.booksCol {
-  opacity: 0;
-  transform: translateX(-100px);
-  transition: transform 0.5s ease, opacity 0.5s ease;
+.books-side {
+  width: 20.5rem;
+  height: 95%;
+  display: flex;
+  
+  &_left {
+    clip-path: polygon(0% 0%, 100% 30%, 100% 70%, 0% 100%);
+    flex-direction: row-reverse;
+  }
+
+  &_right {
+    clip-path: polygon(0% 30%, 100% 0%, 100% 100%, 0% 70%);
+  }
+
+  .books-row {
+    height: 100%;
+    width: 2.5rem;
+    display: flex;
+
+    &_left {
+      flex-direction: row-reverse;
+      @include transition(translateX(100px), translateX(0));
+    }
+
+    &_right {
+      @include transition(translateX(-100px), translateX(0));
+    }
+
+    .books-column {
+      width: 45%;
+      height: 100%;
+      background: #333;
+    }
+
+    .books-shelves {
+      width: 55%;
+      height: 100%;
+      @include flex(column, center);
+
+      .books-shelf {
+        width: 100%;
+        border-bottom: 3px solid #333;
+        @include flex(row, start, end, 0.25rem);
+
+        .book {
+          width: 1rem;
+          background: #d8ccb0;
+        }
+      }
+    }
+  }
+
+  .row-column {
+    width: 4rem;
+    background: #333;
+  }
 }
-.booksCol__left {
-  opacity: 0;
-  transform: translateX(100px);
-  transition: transform 0.5s ease, opacity 0.5s ease;
-}
-.booksCol.active {
-  opacity: 1;
-  transform: translateX(0);
-}
-.booksCol__left.active {
-  opacity: 1;
-  transform: translateX(0);
-}
+
 .main-page-container {
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex(row, center, center);
 }
 
 .carousel-container {

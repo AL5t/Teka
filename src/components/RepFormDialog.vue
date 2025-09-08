@@ -146,7 +146,7 @@ function openRepFormDialog() {
             :style="{backgroundImage: `url(${val.url})`}"
             class="background__image-container"
           >
-            <i v-if="selectedRep.backgroundImage === val.url" class="pi pi-star-fill" style="color: #00ff00"></i>
+            <i v-if="selectedRep.backgroundImage === val.url" class="pi pi-check" style="color: #00ff00; font-size: 3rem;"></i>
           </div>
         </div>
       </div>
@@ -168,9 +168,7 @@ function openRepFormDialog() {
 .dialog-content {
   width: 530px;
   margin: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @include flex(column, normal, stretch, 1rem);
 
   &__input {
     width: 100%;
@@ -182,28 +180,23 @@ function openRepFormDialog() {
   }
 
   &__background-block {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    @include flex(column, normal, stretch, 0.5rem);
   }
 }
 
 .background {
   &__container {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    flex-wrap: wrap;
+    @include flex(row, normal, center, 1rem, wrap);
   }
 
   &__image-container {
     width: 75px;
     height: 75px;
-    display: flex;
-    align-items: end;
+    @include flex(row, center, center);
     border: 1px solid #000;
     background-color: #fff;
-    background-position: 25% 75%;
+    background-position: center center;
+    background-size: 175%;
     overflow: hidden;
   }
 }

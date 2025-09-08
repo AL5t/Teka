@@ -46,16 +46,12 @@ onBeforeMount(async () => {
 <style scoped lang="scss">
 .preview-container {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @include flex(column, normal, stretch, 1rem);
 
   &__image-container {
     width: 100%;
     height: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flex(row, center, center);
     flex-shrink: 0;
     overflow: hidden;
 
@@ -70,9 +66,7 @@ onBeforeMount(async () => {
     width: 100%;
     max-height: 50%;
     padding: 1rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    @include flex(column, normal, stretch, 1rem);
     background-color: var(--bg-card-color);
   }
 
