@@ -156,7 +156,7 @@ const DB = {
     }
 
     if (!Array.isArray(tags) || tags.length === 0) {
-      return []; // нет тегов — нет результата
+      return [];
     }
 
     const tx = db.transaction(ITEMS_NAME, 'readonly');
@@ -164,7 +164,6 @@ const DB = {
 
     const allCandidates = new Map();
 
-    // Сначала собираем все элементы по каждому тегу
     for (const tag of tags) {
       const items = await index.getAll(tag);
       for (const item of items) {
@@ -172,7 +171,6 @@ const DB = {
       }
     }
 
-    // Теперь фильтруем только те, у кого есть ВСЕ заданные теги
     const result = [];
 
     for (const item of allCandidates.values()) {
@@ -183,7 +181,6 @@ const DB = {
       }
     }
 
-    /// const exactMatches = await DB.searchItemsWithAllTags(['urgent', 'todo']);
     return result;
   },
 

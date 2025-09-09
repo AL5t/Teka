@@ -18,7 +18,6 @@ const ItemStore = useItemStore();
 
 const allTags = ref([]);
 const selectedTags = ref([]);
-const containerRepRef = ref();
 
 let repData;
 const items = ref();
@@ -90,7 +89,6 @@ async function getItemsAndAllTags() {
 
 onBeforeMount(async () => {
   repData = await DB.getRep(RepositoryStore.selectedRepository?.id);
-  // containerRepRef.value.style.setProperty('--bg-color', "#" + repData.background);
   document.body.style.setProperty('--bg-color', "#" + (repData.background || 'fff'));
   document.body.style.setProperty('--bg-card-color', changeColorShade(repData.background, 25));
 
@@ -107,10 +105,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="container-rep" ref="containerRepRef" :style="backgroundStyle">
+  <div class="container-rep" :style="backgroundStyle">
     <!-- <SidePanel @update-selected-category="handleValueUpdate" /> -->
     <div class="main-panel">
-      <!-- <div class="main-panel__title">{{ repData?.name }}</div> -->
       <div class="main-panel__toolbar">
         <MultiSelect
           v-model="selectedTags"
