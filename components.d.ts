@@ -28,6 +28,7 @@ declare module 'vue' {
     MultiSelect: typeof import('primevue/multiselect')['default']
     Popover: typeof import('primevue/popover')['default']
     PreviewItem: typeof import('./src/components/PreviewItem.vue')['default']
+    ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RepFormDialog: typeof import('./src/components/RepFormDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

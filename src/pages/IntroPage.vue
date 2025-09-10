@@ -37,6 +37,11 @@ async function goHomePage() {
 }
 
 onBeforeMount(async () => {
+  if (window.innerWidth < 800) {
+    steps.value.number = 4;
+    columns.value.number = 4;
+  }
+
   for (let i = 0; i < steps.value.number; i++) {
     setTimeout(() => {
       steps.value.active[i] = true;
@@ -85,7 +90,6 @@ onBeforeMount(async () => {
               }
             }
           }"
-
         >
         </Button>
       </div>
@@ -111,12 +115,12 @@ onBeforeMount(async () => {
 }
 
 .temple {
-  width: 100%;
+  width: 1000px;
   @include flex(column, center, center);
 }
 
 .roof-container {
-  width: 714px;
+  width: 72%;
   height: 185px;
   @include transition(translateY(-100px), translateY(0));
 
@@ -138,7 +142,7 @@ onBeforeMount(async () => {
 }
 
 .columns-container {
-  width: 700px;
+  width: 70%;
   @include flex(row, space-between);
   position: relative;
   
@@ -181,7 +185,6 @@ onBeforeMount(async () => {
 
 .steps-container {
   width: 100%;
-  padding: 0 3rem;
   @include flex(column-reverse);
 
   .step-container {

@@ -31,6 +31,7 @@ function openRepFormDialog(target, card) {
 async function deleteRepository() {
   await DB.deleteRep(card.id);
   await RepositoryStore.getAllReps();
+  RepositoryStore.repCarouselUpdateKey++;
 }
 </script>
 
@@ -54,7 +55,7 @@ async function deleteRepository() {
         <Button
           icon="pi pi-trash"
           variant="text"
-          @click="deleteRepository"
+          @click="deleteRepository()"
         ></Button>
       </div>
       <div class="card__title">{{ card.name }}</div>

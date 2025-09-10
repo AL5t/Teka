@@ -6,6 +6,8 @@ Data storage project
 
 ## Demo
 
+[teka-storage](https://teka-storage.netlify.app/)
+
 ## Project Setup
 
 1. 

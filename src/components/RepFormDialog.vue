@@ -82,6 +82,7 @@ function closeRepFormDialog() {
   RepositoryStore.isVisibleRepFormDialog = false;
   RepositoryStore.isCreatingRep = false;
   RepositoryStore.isEditingRep = false;
+  RepositoryStore.setSelectedRepository(null);
 
   selectedRep.value = {
     name: null,
@@ -107,7 +108,7 @@ function openRepFormDialog() {
   <Dialog
     v-model:visible="RepositoryStore.isVisibleRepFormDialog"
     @show="openRepFormDialog"
-    @after-hide="closeRepFormDialog"
+    @hide="closeRepFormDialog"
     modal
     :draggable="false"
     :style="backgroundStyle"

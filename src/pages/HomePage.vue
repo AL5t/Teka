@@ -8,6 +8,8 @@ import { useRepositoryStore } from '@/store/RepositoryStore';
 
 const RepositoryStore = useRepositoryStore();
 
+const isDataLoaded = ref(false);
+
 const columns = ref({
   number: 4,
   active: [],
@@ -21,12 +23,7 @@ const responsiveOptions = ref([
     numScroll: 1,
   },
   {
-    breakpoint: '1199px',
-    numVisible: 2,
-    numScroll: 1,
-  },
-  {
-    breakpoint: '767px',
+    breakpoint: '1050px',
     numVisible: 1,
     numScroll: 1,
   },
@@ -68,8 +65,13 @@ onBeforeMount(async () => {
   await RepositoryStore.getAllReps();
 
   if(RepositoryStore.allReps?.length === 1) {
+    setTimeout(() => {
+      isDataLoaded.value = true;
+    }, 2000);
     await addDemoData();
     await RepositoryStore.getAllReps();
+  } else {
+    isDataLoaded.value = true;
   }
 
   for (let i = 0; i < columns.value.number; i++) {
@@ -103,21 +105,28 @@ onBeforeMount(async () => {
         </div>
       </div>
       <div class="books-row books-row_left row-column" :class="{ active: columns.active[3] }"></div>
-    </div>
+    </div>    
     <div class="carousel-container">
-      <Carousel
-        :value="RepositoryStore.allReps"
-        :numVisible="3"
-        :numScroll="1"
-        :responsiveOptions="responsiveOptions"
-        circular
-        :autoplayInterval="4000"
-        :key="RepositoryStore.repCarouselUpdateKey"
-      >
-        <template #item="slotProps">
-          <CardView :card="slotProps.data" />
-        </template>
-      </Carousel>
+      <template v-if="!isDataLoaded">
+        <div class="carousel__spinner">
+          <ProgressSpinner />
+        </div>
+      </template>
+      <template v-else>
+        <Carousel
+          :value="RepositoryStore.allReps"
+          :numVisible="3"
+          :numScroll="1"
+          :responsiveOptions="responsiveOptions"
+          circular
+          :autoplayInterval="4000"
+          :key="RepositoryStore.repCarouselUpdateKey"
+        >
+          <template #item="slotProps">
+            <CardView :card="slotProps.data" />
+          </template>
+        </Carousel>
+      </template>
     </div>
     <div class="books-side books-side_right">
       <div
@@ -146,7 +155,7 @@ onBeforeMount(async () => {
 
 <style scoped lang="scss">
 .books-side {
-  width: 20.5rem;
+  width: 25%;
   height: 95%;
   display: flex;
   
@@ -206,9 +215,14 @@ onBeforeMount(async () => {
 .main-page-container {
   width: 100%;
   @include flex(row, center, center);
+  overflow: hidden;
 }
 
 .carousel-container {
-  width: 40rem;
+  width: 50%;
+
+  .carousel__spinner {
+    @include flex(row, center, center);
+  }
 }
 </style>
