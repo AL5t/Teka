@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onBeforeMount, inject } from 'vue';
-import DB from '@/composables/db';
 import showUrl from '@/composables/showUrl';
 import { useItemStore } from '@/store/ItemStore';
 
@@ -10,7 +9,7 @@ const itemData = ref();
 const registerHandler = inject('registerHandler');
 
 async function getItemData() {
-  itemData.value = await DB.getItem(ItemStore.selectedItem?.id);
+  itemData.value = await ItemStore.getItem();
 }
 
 async function updateItemData() {

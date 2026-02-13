@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { useRepositoryStore } from '@/store/RepositoryStore';
-import DB from '@/composables/db';
 
 const RepositoryStore = useRepositoryStore();
 
@@ -44,13 +43,13 @@ async function createRep() {
     selectedRep.value.backgroundImage = "none";
   }
 
-  await DB.addRep({
-    id: uuidv4(),
-    name: selectedRep.value.name,
-    description: selectedRep.value.description,
-    background: selectedRep.value.background,
-    backgroundImage: selectedRep.value.backgroundImage
-  });
+  await RepositoryStore.addRep(
+    uuidv4(),
+    selectedRep.value.name,
+    selectedRep.value.description,
+    selectedRep.value.background,
+    selectedRep.value.backgroundImage
+  );
 
   RepositoryStore.isVisibleRepFormDialog = false;
 
@@ -66,13 +65,12 @@ async function editRep() {
 
   RepositoryStore.isVisibleRepFormDialog = false;
 
-  await DB.updateRep({
-    id: RepositoryStore.selectedRepository.id,
-    name: selectedRep.value.name,
-    description: selectedRep.value.description,
-    background: selectedRep.value.background,
-    backgroundImage: selectedRep.value.backgroundImage
-  });
+  await RepositoryStore.updateRep(
+    selectedRep.value.name,
+    selectedRep.value.description,
+    selectedRep.value.background,
+    selectedRep.value.backgroundImage
+  );
 
   await RepositoryStore.getAllReps();
 }
@@ -80,8 +78,7 @@ async function editRep() {
 
 function closeRepFormDialog() {
   RepositoryStore.isVisibleRepFormDialog = false;
-  RepositoryStore.isCreatingRep = false;
-  RepositoryStore.isEditingRep = false;
+  RepositoryStore.mode = null;
   RepositoryStore.setSelectedRepository(null);
 
   selectedRep.value = {
@@ -116,8 +113,8 @@ function openRepFormDialog() {
   >
     <template #header>
       <div>
-        <span v-if="RepositoryStore.isCreatingRep">Create</span>
-        <span v-if="RepositoryStore.isEditingRep">Edit</span>
+        <span v-if="RepositoryStore.mode === 'create'">Create</span>
+        <span v-if="RepositoryStore.mode === 'edit'">Edit</span>
         <span> repository</span>
       </div>
     </template>
@@ -155,9 +152,9 @@ function openRepFormDialog() {
     <template #footer>
       <Button label="Close" severity="danger" @click="closeRepFormDialog" autofocus />
       <Button
-        :label="RepositoryStore.isCreatingRep ? 'Create' : 'Edit'"
+        :label="RepositoryStore.mode === 'create' ? 'Create' : 'Edit'"
         severity="success"
-        @click="RepositoryStore.isCreatingRep ? createRep() : editRep()"
+        @click="RepositoryStore.mode === 'create' ? createRep() : editRep()"
         autofocus
         :disabled="!selectedRep.name"
       />

@@ -4,7 +4,6 @@ import { useConfirm } from "primevue/useconfirm";
 import { useRepositoryStore } from '@/store/RepositoryStore';
 import { useItemStore } from '@/store/ItemStore';
 
-import DB from '@/composables/db';
 import showUrl from '@/composables/showUrl';
 import changeColorShade from '@/composables/changeColorShade';
 
@@ -28,6 +27,15 @@ const backgroundStyle = computed(() => {
   };
 });
 
+const isVisibleItemViewDialog = computed({
+  get: () => ItemStore.activeDialog === 'itemView',
+  set: (value) => {
+    if(!value) {
+      ItemStore.activeDialog = null;
+    }
+  },
+});
+
 const handlers = {};
 function registerHandler(childName, methods) {
   handlers[childName] = methods;
@@ -48,7 +56,7 @@ provide('callHandler', callHandler);
 
 async function searchByTags() {
   if(selectedTags.value?.length) {
-    items.value = await DB.searchItemsByTags(RepositoryStore.selectedRepository?.id, selectedTags.value);
+    items.value = await ItemStore.searchItemsByTags(selectedTags.value);
   } else {
     await getItemsAndAllTags();
   }
@@ -70,7 +78,7 @@ const confirmDeleteItem = () => {
     },
     accept: async () => {
       if(ItemStore.selectedItem.id) {
-        await DB.deleteItem(ItemStore.selectedItem.id);
+        ItemStore.deleteItem(ItemStore.selectedItem.id);
         await getItemsAndAllTags();
         ItemStore.setSelectedItem(null);
       }
@@ -80,15 +88,15 @@ const confirmDeleteItem = () => {
 
 async function getItemsAndAllTags() {
   const [tags, sortedItems] = await Promise.all([
-    DB.getAllUniqueTagsByRepId(RepositoryStore.selectedRepository?.id),
-    DB.getItemsByRepId(RepositoryStore.selectedRepository?.id)
+    RepositoryStore.getAllUniqueTagsByRepId(),
+    ItemStore.getItemsByRepId()
   ]);
   allTags.value = tags;
   items.value = sortedItems;
 }
 
 onBeforeMount(async () => {
-  repData = await DB.getRep(RepositoryStore.selectedRepository?.id);
+  repData = await RepositoryStore.getRep();
   document.body.style.setProperty('--bg-color', "#" + (repData.background || 'fff'));
   document.body.style.setProperty('--bg-card-color', changeColorShade(repData.background, 25));
 
@@ -165,14 +173,14 @@ onUnmounted(() => {
               :key="index"
               class="tiles-view__item"
             >
-              <div class="item__container-image tiles" @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true">
+              <div class="item__container-image tiles" @click="ItemStore.setSelectedItem(item); ItemStore.activeDialog = 'itemView'">
                 <img :src=showUrl(item?.image) class="responsive-image" />
               </div>
               <div style="width: 100%; padding: 0.5rem; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-card-color);">
                 <div class="item__name-block">
                   <span
                     v-tooltip="item.name"
-                    @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true"
+                    @click="ItemStore.setSelectedItem(item); ItemStore.activeDialog = 'itemView'"
                     class="item__name"
                   >{{ item.name }}</span>
                   <div class="item__buttons">
@@ -194,7 +202,7 @@ onUnmounted(() => {
                     label="..."
                     variant="outlined"
                     severity="secondary"
-                    @click="ItemStore.setSelectedItem(item); ItemStore.isVisibleItemViewDialog = true;"
+                    @click="ItemStore.setSelectedItem(item); ItemStore.activeDialog = 'itemView';"
                     autofocus
                     class="tags__button"
                   />
@@ -213,7 +221,7 @@ onUnmounted(() => {
     <ConfirmDialog></ConfirmDialog>
     <ItemFormDialog @update-data="getItemsAndAllTags()" />
     <Dialog
-      v-model:visible="ItemStore.isVisibleItemViewDialog"
+      v-model:visible="isVisibleItemViewDialog"
       modal
       :draggable="false"
       style="width: 50rem; height: 85%; border-radius: 0;"
