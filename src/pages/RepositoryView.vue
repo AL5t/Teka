@@ -62,7 +62,7 @@ async function searchByTags() {
   }
 }
 
-const confirmDeleteItem = () => {
+const confirmDeleteItem = (item) => {
   confirm.require({
     message: 'Do you want to delete this item?',
     header: 'Delete item',
@@ -77,6 +77,7 @@ const confirmDeleteItem = () => {
         severity: 'danger'
     },
     accept: async () => {
+      ItemStore.setSelectedItem(item);
       if(ItemStore.selectedItem?.id) {
         await ItemStore.deleteItem(ItemStore.selectedItem.id);
         await getItemsAndAllTags();
@@ -151,7 +152,7 @@ onUnmounted(() => {
                     <span class="item__name" v-tooltip="item.name">{{ item.name }}</span>
                     <div>
                       <Button icon="pi pi-pencil" severity="secondary" variant="text" @click.stop="ItemStore.openItemFormDialog('edit', item)"></Button>
-                      <Button icon="pi pi-trash" severity="secondary" variant="text" @click.stop="confirmDeleteItem()"></Button>
+                      <Button icon="pi pi-trash" severity="secondary" variant="text" @click.stop="confirmDeleteItem(item)"></Button>
                     </div>
                   </div>
                   <div class="tags item__tags">
@@ -188,7 +189,7 @@ onUnmounted(() => {
                   >{{ item.name }}</span>
                   <div class="item__buttons">
                     <Button class="item__button" icon="pi pi-pencil" severity="secondary" variant="text" @click.stop="ItemStore.openItemFormDialog('edit', item)"></Button>
-                    <Button class="item__button" icon="pi pi-trash" severity="secondary" variant="text" @click.stop="confirmDeleteItem()"></Button>
+                    <Button class="item__button" icon="pi pi-trash" severity="secondary" variant="text" @click.stop="confirmDeleteItem(item)"></Button>
                   </div>
                 </div>
                 <div class="item__tags-block">
