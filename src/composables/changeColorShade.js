@@ -3,6 +3,9 @@ export default function changeColorShade(hex, number) {
     return "#fff";
   }
   let color = hex.startsWith("#") ? hex.slice(1) : hex;
+  if (color.length !== 6) {
+    return '#fff';
+  }
 
   if(!number || !Number.isFinite(number)) {
     return "#" + color;
@@ -16,5 +19,5 @@ export default function changeColorShade(hex, number) {
   let newG = Math.min(255, Math.max(0, g + number));
   let newB = Math.min(255, Math.max(0, b + number));
   
-  return "#" + newR.toString(16) + newG.toString(16) + newB.toString(16);
+  return "#" + newR.toString(16).padStart(2, '0') + newG.toString(16).padStart(2, '0') + newB.toString(16).padStart(2, '0');
 }

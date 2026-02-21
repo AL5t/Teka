@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject } from 'vue';
+import { computed, inject, ref } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import FileUpload from 'primevue/fileupload';
 import { useRepositoryStore } from '@/store/RepositoryStore';
@@ -39,9 +39,12 @@ function updateItemData() {
 }
 
 function addNewTag() {
-  if(newTag.value) {
-    addedItem.value.tags.push(newTag.value);
-    allTags.value.push(newTag.value);
+  const normalizedTag = newTag.value?.trim();
+  if (normalizedTag && !addedItem.value.tags.includes(normalizedTag)) {
+    addedItem.value.tags.push(normalizedTag);
+    if (!allTags.value.includes(normalizedTag)) {
+      allTags.value.push(normalizedTag);
+    }
     newTag.value = null;
   }
 }

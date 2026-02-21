@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia';
 import DB from '@/composables/db';
+import { useRepositoryStore } from '@/store/RepositoryStore';
 
 export const useItemStore = defineStore('ItemStore', {
   state: () => ({
     selectedItem: null,
     
-    activeDialog: 'itemView' | 'itemForm' | null,
+    activeDialog: null,
 
-    mode: 'create' | 'edit' | null
+    mode: null
   }),
   getters: {},
   actions: {
@@ -26,11 +27,13 @@ export const useItemStore = defineStore('ItemStore', {
     },
 
     async getItemsByRepId() {
-      return await DB.getItemsByRepId(this.selectedRepository?.id);
+      const repositoryStore = useRepositoryStore();
+      return await DB.getItemsByRepId(repositoryStore.selectedRepository?.id);
     },
 
     async searchItemsByTags(tags) {
-      return await DB.searchItemsByTags(this.selectedRepository?.id, tags);
+      const repositoryStore = useRepositoryStore();
+      return await DB.searchItemsByTags(repositoryStore.selectedRepository?.id, tags);
     },
 
     async addItem(itemId, repId, itemName, itemNote, itemTags, itemImage) {
@@ -45,6 +48,7 @@ export const useItemStore = defineStore('ItemStore', {
     },
 
     async updateItem(repId, itemName, itemNote, itemTags, itemImage) {
+      if (!this.selectedItem?.id) return;
       await DB.updateItem({
         id: this.selectedItem.id,
         repId: repId,
@@ -57,6 +61,7 @@ export const useItemStore = defineStore('ItemStore', {
 
 
     async deleteItem(itemId) {
+      if (!itemId) return;
       await DB.deleteItem(itemId);
     },
 

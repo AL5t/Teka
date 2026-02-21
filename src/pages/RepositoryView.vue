@@ -77,8 +77,8 @@ const confirmDeleteItem = () => {
         severity: 'danger'
     },
     accept: async () => {
-      if(ItemStore.selectedItem.id) {
-        ItemStore.deleteItem(ItemStore.selectedItem.id);
+      if(ItemStore.selectedItem?.id) {
+        await ItemStore.deleteItem(ItemStore.selectedItem.id);
         await getItemsAndAllTags();
         ItemStore.setSelectedItem(null);
       }
@@ -97,6 +97,9 @@ async function getItemsAndAllTags() {
 
 onBeforeMount(async () => {
   repData = await RepositoryStore.getRep();
+  if (!repData) {
+    return;
+  }
   document.body.style.setProperty('--bg-color', "#" + (repData.background || 'fff'));
   document.body.style.setProperty('--bg-card-color', changeColorShade(repData.background, 25));
 

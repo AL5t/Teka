@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { v4 as uuidv4 } from 'uuid';
 import DB from '@/composables/db';
 
 export const useRepositoryStore = defineStore('RepositoryStore', {
@@ -10,7 +11,7 @@ export const useRepositoryStore = defineStore('RepositoryStore', {
 
     isVisibleRepFormDialog: false,
 
-    mode: 'create' | 'edit' | null
+    mode: null
   }),
   getters: {},
   actions: {
@@ -25,16 +26,23 @@ export const useRepositoryStore = defineStore('RepositoryStore', {
     },
 
     async getAllReps() {
-      this.allReps = await DB.getAllReps();
-      this.allReps.push({ isTemplate: true });
+      try {
+        const reps = await DB.getAllReps();
+        this.allReps = [...reps, { isTemplate: true }];
+      } catch (error) {
+        console.error('Failed to load repositories:', error);
+        this.allReps = [{ isTemplate: true }];
+      }
     },
 
     async getRep() {
-      return await DB.getRep(this.selectedRepository?.id);
+      if (!this.selectedRepository?.id) return null;
+      return await DB.getRep(this.selectedRepository.id);
     },
 
     async getAllUniqueTagsByRepId() {
-      return await DB.getAllUniqueTagsByRepId(this.selectedRepository?.id);
+      if (!this.selectedRepository?.id) return [];
+      return await DB.getAllUniqueTagsByRepId(this.selectedRepository.id);
     },
 
     async addRep(repId, repName, repDescription, repBackground, repBackgroundImage) {
@@ -48,6 +56,7 @@ export const useRepositoryStore = defineStore('RepositoryStore', {
     },
 
     async updateRep(repName, repDescription, repBackground, repBackgroundImage) {
+      if (!this.selectedRepository?.id) return;
       await DB.updateRep({
         id: this.selectedRepository.id,
         name: repName,
@@ -62,27 +71,30 @@ export const useRepositoryStore = defineStore('RepositoryStore', {
     },
 
     async addDemoData(repId, repName, repDescription, repBackground, repBackgroundImage, repItems) {
-      await this.addRep(repId, repName, repDescription, repBackground, repBackgroundImage)
-      .then(async () => {
-        for (let j = 0; j < repItems.length; j++) {
-          let image = null;
-          if(repItems[j].image) {
-            const response = await fetch(repItems[j].image);
+      await this.addRep(repId, repName, repDescription, repBackground, repBackgroundImage);
+
+      for (const repItem of repItems) {
+        let image = null;
+        if (repItem.image) {
+          try {
+            const response = await fetch(repItem.image);
             if (!response.ok) {
-              throw new Error('Ошибка загрузки изображения');
+              throw new Error(`Image fetch failed: ${response.status}`);
             }
             image = await response.blob();
+          } catch (error) {
+            console.error('Failed to load demo image:', error);
           }
-          await DB.addItem({
-            id: uuidv4(),
-            repId: repId,
-            name: repItems[j].name,
-            note: repItems[j].note,
-            tags: repItems[j].tags,
-            image: image
-          });
         }
-      });
+        await DB.addItem({
+          id: uuidv4(),
+          repId,
+          name: repItem.name,
+          note: repItem.note,
+          tags: repItem.tags,
+          image,
+        });
+      }
     },
   },
   persist: true,

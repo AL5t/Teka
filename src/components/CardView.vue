@@ -12,7 +12,10 @@ const { card } = defineProps({
 
 function openCard(cardId, cardTitle) {
   RepositoryStore.setSelectedRepository({ id: cardId, name: cardTitle });
-  router.push('/' + cardTitle.toLowerCase());
+  router.push({
+    name: 'RepositoryView',
+    params: { repositoryName: cardTitle.toLowerCase() },
+  });
 }
 
 async function deleteRepository() {
