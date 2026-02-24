@@ -2,7 +2,6 @@
 import { useRouter } from 'vue-router';
 import { useRepositoryStore } from '@/store/RepositoryStore';
 import RepFormDialog from '@/components/RepFormDialog.vue';
-import DB from '@/composables/db';
 
 const router = useRouter();
 const RepositoryStore = useRepositoryStore();
@@ -13,23 +12,14 @@ const { card } = defineProps({
 
 function openCard(cardId, cardTitle) {
   RepositoryStore.setSelectedRepository({ id: cardId, name: cardTitle });
-  router.push('/' + cardTitle.toLowerCase());
-}
-
-function openRepFormDialog(target, card) {
-  RepositoryStore.isVisibleRepFormDialog = true
-
-  if(target === "edit") {
-    RepositoryStore.isEditingRep = true;
-    RepositoryStore.setSelectedRepository(card);
-  } else {
-    RepositoryStore.isCreatingRep = true;
-    RepositoryStore.setSelectedRepository(null);
-  }
+  router.push({
+    name: 'RepositoryView',
+    params: { repositoryName: cardTitle.toLowerCase() },
+  });
 }
 
 async function deleteRepository() {
-  await DB.deleteRep(card.id);
+  await RepositoryStore.deleteRep(card.id);
   await RepositoryStore.getAllReps();
   RepositoryStore.repCarouselUpdateKey++;
 }
@@ -38,7 +28,7 @@ async function deleteRepository() {
 <template>
   <template v-if="card.isTemplate">
     <div class="card_empty">
-      <Button variant="text" @click="openRepFormDialog('create')">
+      <Button variant="text" @click="RepositoryStore.openRepFormDialog('create')">
         <i class="pi pi-plus" style="font-size: 4rem"></i>
       </Button>
       <RepFormDialog />
@@ -50,7 +40,7 @@ async function deleteRepository() {
         <Button
           icon="pi pi-pencil"
           variant="text"
-          @click="openRepFormDialog('edit', card)"
+          @click="RepositoryStore.openRepFormDialog('edit', card)"
         ></Button>
         <Button
           icon="pi pi-trash"

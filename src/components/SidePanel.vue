@@ -1,7 +1,6 @@
 <script setup>
 import { computed, onBeforeMount, ref } from 'vue';
 import { useRepositoryStore } from '@/store/RepositoryStore';
-import DB from '@/composables/db';
 
 const RepositoryStore = useRepositoryStore();
 
@@ -44,7 +43,7 @@ function createCategory() {
 }
 
 onBeforeMount(async () => {
-  repData.value = await DB.getRep(RepositoryStore.selectedRepository?.id);
+  repData.value = await RepositoryStore.getRep();
 })
 </script>
 

@@ -1,7 +1,13 @@
+const blobUrlCache = new WeakMap();
+
 export default function showUrl(image) {
-  if (image && image.size > 0 && image instanceof Blob) {
-    return URL.createObjectURL(image);
-  } else {
-    console.error('Blob пуст или некорректный');
+  if (!(image instanceof Blob) || image.size <= 0) {
+    return null;
   }
+
+  if (!blobUrlCache.has(image)) {
+    blobUrlCache.set(image, URL.createObjectURL(image));
+  }
+
+  return blobUrlCache.get(image);
 }

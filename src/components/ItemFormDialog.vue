@@ -1,11 +1,10 @@
 <script setup>
-import { ref, inject } from 'vue';
+import { computed, inject, ref } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import FileUpload from 'primevue/fileupload';
 import { useRepositoryStore } from '@/store/RepositoryStore';
 import { useItemStore } from '@/store/ItemStore';
 
-import DB from '@/composables/db';
 import showUrl from '@/composables/showUrl';
 
 const RepositoryStore = useRepositoryStore();
@@ -25,15 +24,27 @@ const allTags = ref([]);
 const srcUploadingFile = ref();
 const isSelectImage = ref(false);
 
+const isVisibleItemFormDialog = computed({
+  get: () => ItemStore.activeDialog === 'itemForm',
+  set: (value) => {
+    if(!value) {
+      ItemStore.activeDialog = null;
+    }
+  },
+});
+
 const callHandler = inject('callHandler');
 function updateItemData() {
   callHandler('PreviewItem', 'updateItemData');
 }
 
 function addNewTag() {
-  if(newTag.value) {
-    addedItem.value.tags.push(newTag.value);
-    allTags.value.push(newTag.value);
+  const normalizedTag = newTag.value?.trim();
+  if (normalizedTag && !addedItem.value.tags.includes(normalizedTag)) {
+    addedItem.value.tags.push(normalizedTag);
+    if (!allTags.value.includes(normalizedTag)) {
+      allTags.value.push(normalizedTag);
+    }
     newTag.value = null;
   }
 }
@@ -51,14 +62,14 @@ function removeImage() {
 async function addItem() {
   if(!addedItem.value.name || !addedItem.value.tags?.length) return;
 
-  await DB.addItem({
-    id: uuidv4(),
-    repId: RepositoryStore.selectedRepository.id,
-    name: addedItem.value.name,
-    note: addedItem.value.note,
-    tags: Array.from(addedItem.value.tags),
-    image: addedItem.value.image
-  });
+  await ItemStore.addItem(
+    uuidv4(),
+    RepositoryStore.selectedRepository.id,
+    addedItem.value.name,
+    addedItem.value.note,
+    Array.from(addedItem.value.tags),
+    addedItem.value.image
+  );
 
   emit("updateData");
 
@@ -66,14 +77,13 @@ async function addItem() {
 }
 
 async function editItem() {
-  await DB.updateItem({
-    id: ItemStore.selectedItem.id,
-    repId: RepositoryStore.selectedRepository.id,
-    name: addedItem.value.name,
-    note: addedItem.value.note,
-    tags: Array.from(addedItem.value.tags),
-    image: addedItem.value.image
-  });
+  await ItemStore.updateItem(
+    RepositoryStore.selectedRepository.id,
+    addedItem.value.name,
+    addedItem.value.note,
+    Array.from(addedItem.value.tags),
+    addedItem.value.image
+  );
 
   emit("updateData");
 
@@ -83,9 +93,9 @@ async function editItem() {
 }
 
 async function showItemFormDialog() {
-  allTags.value = await DB.getAllUniqueTagsByRepId(RepositoryStore.selectedRepository?.id);
+  allTags.value = await RepositoryStore.getAllUniqueTagsByRepId();
 
-  if(ItemStore.isEditingItem) {
+  if(ItemStore.mode === 'edit') {
     addedItem.value = {
       name: ItemStore.selectedItem.name,
       note: ItemStore.selectedItem.note,
@@ -96,9 +106,8 @@ async function showItemFormDialog() {
 }
 
 function closeItemFormDialog() {
-  ItemStore.isVisibleItemFormDialog = false;
-  ItemStore.isCreatingItem = false;
-  ItemStore.isEditingItem = false;
+  ItemStore.activeDialog = null;
+  ItemStore.mode = null;
   addedItem.value = {
     name: null,
     note: null,
@@ -112,7 +121,7 @@ function closeItemFormDialog() {
 
 <template>
   <Dialog
-    v-model:visible="ItemStore.isVisibleItemFormDialog"
+    v-model:visible="isVisibleItemFormDialog"
     @show="showItemFormDialog()"
     @after-hide="closeItemFormDialog()"
     modal
@@ -120,12 +129,12 @@ function closeItemFormDialog() {
     style="width: 75%; border-radius: 0;"
   >
     <template #header>
-      <div v-if="ItemStore.isCreatingItem">Add item</div>
-      <div v-if="ItemStore.isEditingItem">Edit item</div>
+      <div v-if="ItemStore.mode === 'create'">Add item</div>
+      <div v-if="ItemStore.mode === 'edit'">Edit item</div>
     </template>
     <div class="dialog-content">
       <div>
-        <div v-if="ItemStore.isEditingItem && addedItem.image" class="image-container">
+        <div v-if="ItemStore.mode === 'edit' && addedItem.image" class="image-container">
           <img :src="showUrl(ItemStore.selectedItem?.image)" class="responsive-image" />
           <Button icon="pi pi-times" variant="text" severity="danger" @click="addedItem.image = null" />
         </div>
@@ -202,8 +211,8 @@ function closeItemFormDialog() {
     </div>
     <template #footer>
       <Button label="Close" severity="danger" @click="closeItemFormDialog()" autofocus />
-      <Button v-if="ItemStore.isCreatingItem" label="Add" severity="success" @click="addItem()" :disabled="!addedItem.name || !addedItem.tags?.length" autofocus />
-      <Button v-if="ItemStore.isEditingItem" label="Edit" severity="success" @click="editItem()" :disabled="!addedItem.name || !addedItem.tags?.length" autofocus />
+      <Button v-if="ItemStore.mode === 'create'" label="Add" severity="success" @click="addItem()" :disabled="!addedItem.name || !addedItem.tags?.length" autofocus />
+      <Button v-if="ItemStore.mode === 'edit'" label="Edit" severity="success" @click="editItem()" :disabled="!addedItem.name || !addedItem.tags?.length" autofocus />
     </template>
   </Dialog>
 </template>

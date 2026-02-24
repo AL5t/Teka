@@ -17,15 +17,15 @@ const DB = {
               keyPath: 'id',
               autoIncrement: true,
             });
+          }
 
-            if (!database.objectStoreNames.contains(ITEMS_NAME)) {
-              const itemsStore = database.createObjectStore(ITEMS_NAME, { keyPath: 'id',  autoIncrement: true });
-              itemsStore.createIndex('by-repId', 'repId');
-              itemsStore.createIndex('by-tag', 'tags', { multiEntry: true });
-            }
+          if (!database.objectStoreNames.contains(ITEMS_NAME)) {
+            const itemsStore = database.createObjectStore(ITEMS_NAME, { keyPath: 'id', autoIncrement: true });
+            itemsStore.createIndex('by-repId', 'repId');
+            itemsStore.createIndex('by-tag', 'tags', { multiEntry: true });
           }
         },
-      })
+      });
     }
   },
 
@@ -51,12 +51,13 @@ const DB = {
 
   async deleteRep(id) {
     await this.init();
+    if (!id) return;
 
     const tx = db.transaction([STORE_NAME, ITEMS_NAME], 'readwrite');
     const index = tx.objectStore(ITEMS_NAME).index('by-repId');
-    const items = await index.getAllKeys(IDBKeyRange.only(id));
-    for (const id of items) {
-      await tx.objectStore(ITEMS_NAME).delete(id);
+    const itemKeys = await index.getAllKeys(IDBKeyRange.only(id));
+    for (const itemId of itemKeys) {
+      await tx.objectStore(ITEMS_NAME).delete(itemId);
     }
 
     await tx.objectStore(STORE_NAME).delete(id);
@@ -66,6 +67,7 @@ const DB = {
 
   async getItemsByRepId(repId) {
     await this.init();
+    if (!repId) return [];
     const index = db.transaction(ITEMS_NAME).objectStore(ITEMS_NAME).index('by-repId');
     const items = await index.getAll(IDBKeyRange.only(repId));
     const sortedItems = items.sort((a, b) => {
@@ -81,8 +83,9 @@ const DB = {
   },
 
   async getItem(itemId) {
-    await this.init()
-    return await db.get(ITEMS_NAME, itemId)
+    await this.init();
+    if (!itemId) return null;
+    return await db.get(ITEMS_NAME, itemId);
   },
 
   async addItem(itemData) {
@@ -97,6 +100,7 @@ const DB = {
 
   async deleteItem(itemId) {
     await this.init();
+    if (!itemId) return;
     return db.delete(ITEMS_NAME, itemId);
   },
 
@@ -122,14 +126,7 @@ const DB = {
 
   async searchItemsByTags(repId, tags) {
     await this.init();
-
-    if (!db) {
-      throw new Error('DB is not initialized');
-    }
-
-    if (!repId) {
-      throw new Error('Rep is not selected');
-    }
+    if (!repId || !Array.isArray(tags) || tags.length === 0) return [];
 
     const tx = db.transaction(ITEMS_NAME, 'readonly');
     const index = tx.store.index('by-tag');
@@ -186,10 +183,7 @@ const DB = {
 
   async getAllUniqueTagsByRepId(repId) {
     await this.init();
-
-    if (!db) {
-      throw new Error('DB is not initialized');
-    }
+    if (!repId) return [];
 
     const tx = db.transaction(ITEMS_NAME, 'readonly');
     const index = tx.store.index('by-repId');

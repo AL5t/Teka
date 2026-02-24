@@ -17,7 +17,7 @@ const routes = [
     component: () => import('@/pages/HomePage.vue'),
   },
   {
-    path: '/:repositoryName',
+    path: '/repository/:repositoryName',
     name: 'RepositoryView',
     component: () => import('@/pages/RepositoryView.vue'),
   },

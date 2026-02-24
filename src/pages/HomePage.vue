@@ -1,7 +1,6 @@
 <script setup>
 import { onBeforeMount, ref } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import DB from '@/composables/db';
 import demoData from '@/demo-data/demoData';
 import CardView from '@/components/CardView.vue';
 import { useRepositoryStore } from '@/store/RepositoryStore';
@@ -32,32 +31,7 @@ const responsiveOptions = ref([
 async function addDemoData() {
   for (let i = 0; i < demoData.length; i++) {
     const repId = uuidv4();
-    await DB.addRep({
-      id: repId,
-      name: demoData[i].name,
-      description: demoData[i].description,
-      background: demoData[i].background,
-      backgroundImage: demoData[i].backgroundImage,
-    }).then(async () => {
-      for (let j = 0; j < demoData[i].items.length; j++) {
-        let image = null;
-        if(demoData[i].items[j].image) {
-          const response = await fetch(demoData[i].items[j].image);
-          if (!response.ok) {
-            throw new Error('Ошибка загрузки изображения');
-          }
-          image = await response.blob();
-        }
-        await DB.addItem({
-          id: uuidv4(),
-          repId: repId,
-          name: demoData[i].items[j].name,
-          note: demoData[i].items[j].note,
-          tags: demoData[i].items[j].tags,
-          image: image
-        });
-      }
-    });
+    await RepositoryStore.addDemoData(repId, demoData[i].name, demoData[i].description, demoData[i].background, demoData[i].backgroundImage, demoData[i].items);
   }
 }
 
